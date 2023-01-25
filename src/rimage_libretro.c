@@ -9,6 +9,9 @@
 #define RIMAGE_IMPLEMENTATION
 #include "rimage.h"
 
+Image bunny;
+Rectangle screenRect;
+
 typedef struct Core {
    Image backBuffer;
    Image frontBuffer;
@@ -248,6 +251,7 @@ void UpdateGame() {
    ImageDrawRectangle(&core->backBuffer, 100, 100, 100, 140, GREEN);
    ImageDrawLine(&core->backBuffer, 50, 50, 200, 80, ORANGE);
    ImageDrawRectangle(&core->backBuffer, 20, 150, 50, 80, RED);
+   ImageDraw(&core->backBuffer, bunny, screenRect, screenRect, WHITE);
 }
 
 void retro_run(void) {
@@ -263,7 +267,6 @@ void retro_run(void) {
 
    UpdateGame();
    // Render the backbuffer to the front buffer.
-   Rectangle screenRect = {0, 0, core->frontBuffer.width, core->frontBuffer.height};
    ImageDraw(&core->frontBuffer, core->backBuffer, screenRect, screenRect, WHITE);
 
    size_t pitch = (size_t)GetPixelDataSize(core->frontBuffer.width, 1, core->frontBuffer.format);
@@ -277,6 +280,8 @@ bool LoadGame(const void* data, size_t size, const char* path) {
    TraceLog(LOG_INFO, "LoadGame\n");
 
    // Load the game.
+
+   bunny = LoadImage("wabbit_alpha.png");
 
    return true;
 }
@@ -300,6 +305,8 @@ bool retro_load_game(const struct retro_game_info *info) {
       TraceLog(LOG_ERROR, "RGB565 isn't supported\n");
       return false;
    }
+
+   screenRect = (Rectangle){0, 0, core->frontBuffer.width, core->frontBuffer.height};
 
    check_variables();
 
